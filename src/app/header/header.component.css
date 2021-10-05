@@ -1,0 +1,13 @@
+.primary-color {
+    background-color: var(--primary-color);
+}
+
+.white-font,
+.white-font:focus {
+    color: var(--white);
+}
+
+.white-font:hover {
+    color: var(--gray);
+    text-decoration: underline;
+}

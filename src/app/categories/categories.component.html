@@ -1,0 +1,5 @@
+<h4 class="mx-5 my-4 font-weight-bold">Learn all about Angular</h4>
+<div class="">
+    <app-category *ngFor="let category of categories;let lastChild=last;" [category]="category" [lastChild]="lastChild">
+    </app-category>
+</div>
