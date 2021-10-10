@@ -57,12 +57,10 @@ export class CategoryService {
     }
   }
   deleteQuestion(categoryId: number, questionId: number): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    category?.questions.forEach((question, index) => {
-      if (question.id === questionId) {
-        delete category.questions[index];
-      }
-    });
+    var category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      category.questions=category.questions.filter((question) => question.id !== questionId);
+    }
   }
   likeAnswer(categoryId: number, questionId: number, answerId: number): void {
     const answer = CATEGORIES.find((category) => category.id === categoryId)
@@ -85,13 +83,13 @@ export class CategoryService {
     }
   }
   deleteAnswer(categoryId: number, questionId: number, answerId: number): void {
-    const question = CATEGORIES.find(
+    var question = CATEGORIES.find(
       (category) => category.id === categoryId
     )?.questions.find((question) => question.id === questionId);
-    question?.answers.forEach((answer, index) => {
-      if (answer.id === answerId) {
-        delete question.answers[index];
-      }
-    });
+    if (question) {
+      question.answers = question.answers.filter(
+        (answer) => answer.id !== answerId
+      );
+    }
   }
 }
