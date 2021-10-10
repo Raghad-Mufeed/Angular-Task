@@ -1,1 +1,8 @@
-<p>answer-list works!</p>
+<h4 class="mx-5 mt-4 font-weight-bold">{{ question.question }}</h4>
+<button class="btn mx-5 mb-5" type="button" (click)="openFormModal()">
+  New Answer
+</button>
+<div>
+    <app-answer *ngFor="let answer of question.answers; let lastChild = last" [answer]="answer" [lastChild]="lastChild">
+    </app-answer>
+</div>

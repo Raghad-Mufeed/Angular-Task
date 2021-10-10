@@ -1,0 +1,13 @@
+.modal-header {
+    border-bottom: 0 none;
+}
+
+.modal-footer {
+    border-top: 0 none;
+}
+
+.textarea:focus {
+    outline: none;
+    border: 1px solid var(--blue);
+    box-shadow: 0 0 3px var(--blue);
+}

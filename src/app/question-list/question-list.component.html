@@ -1,1 +1,8 @@
-<p>question-list works!</p>
+<h4 class="mx-5 mt-4 font-weight-bold">Learn about: {{category.name}}</h4>
+<button class="btn mx-5 mb-5" type="button" (click)="openFormModal()">
+    New Question
+</button>
+<div>
+    <app-question *ngFor=" let question of category.questions;let lastChild=last; " [question]="question " [lastChild]="lastChild " [category]="category.id ">
+    </app-question>
+</div>

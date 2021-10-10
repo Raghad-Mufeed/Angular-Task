@@ -11,7 +11,10 @@ import { QuestionComponent } from './question-list/question/question.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { CategoryComponent } from './categories/category/category.component';
 import { AppRoutingModule } from './app-routing.module';
-import { QuestionDetailComponent } from './question-list/question-detail/question-detail.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FormModalComponent } from './form-modal/form-modal.component';
 
 @NgModule({
   declarations: [
@@ -23,10 +26,18 @@ import { QuestionDetailComponent } from './question-list/question-detail/questio
     QuestionComponent,
     CategoriesComponent,
     CategoryComponent,
-    QuestionDetailComponent,
+    FormModalComponent,
   ],
-  imports: [BrowserModule, FormsModule, AppRoutingModule],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    AppRoutingModule,
+    FontAwesomeModule,
+    BrowserAnimationsModule,
+    NgbModule,
+  ],
   providers: [],
   bootstrap: [AppComponent],
+  entryComponents: [FormModalComponent],
 })
 export class AppModule {}

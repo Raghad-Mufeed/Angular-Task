@@ -1,7 +1,10 @@
 <nav class="navbar navbar-default px-0 py-3 primary-color">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand font-weight-bold white-font" routerLink="categories">Categories</a>
+            <a class="navbar-brand white-font" [routerLink]="['/categories']">Categories<span
+                    *ngIf="category">/</span></a>
+            <a *ngIf="category" class="navbar-brand white-font pl-0" [routerLink]="['/questions']" [queryParams]="{categoryId:categoryId}">{{category}}<span *ngIf="question">/</span></a>
+            <a *ngIf="question" class="navbar-brand white-font" [routerLink]="['/question']" [queryParams]="{categoryId:categoryId,questionId:questionId}">{{question}}</a>
         </div>
     </div>
 </nav>

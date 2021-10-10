@@ -1,0 +1,33 @@
+<ng-form>
+    <div class="modal-header pb-0 text-center">
+        <h4 class="modal-title w-100 font-weight-light text-uppercase">
+            {{ modal.title }}
+        </h4>
+    </div>
+    <div class="modal-body container pt-1 justify-content-center">
+        <div class="row mx-3">
+            <textarea type="text" name="textarea" id="textarea" class="textarea col-12 mt-0" rows="3" [(ngModel)]="data">
+            {{ this.data }}
+        </textarea
+      >
+    </div>
+  </div>
+  <div class="modal-footer container mt-2 justify-content-center">
+    <div class="row w-100 pr-0">
+      <div class="col-6">
+        <button type="button" class="btn w-100" (click)="parseInput()">
+          {{ modal.button }}
+        </button>
+      </div>
+      <div class="col-6 pl-0">
+        <button
+          type="button"
+          class="btn btn-cancel w-100"
+          (click)="closeFormModal()"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-form>

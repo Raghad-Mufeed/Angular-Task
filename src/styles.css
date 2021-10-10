@@ -1,10 +1,90 @@
 :root {
     --primary-color: #3e53ab;
-    --white: #FFFFFF;
-    --gray: #D5D7E3;
+    --purple: #263c94;
+    --dark-purple: #49599e;
+    --light-purple: #6b80d6;
+    --light-black: #55585c;
+    --dark-gray: #b7bcc4;
+    --white: #ffffff;
+    --gray: #dfe1e6;
     --blue: #007bff;
     --icon-size: 14vh;
     --font-size-lg: 16px;
     --font-size-md: 14px;
     --font-size-sm: 12px;
+}
+
+.link {
+    color: var(--primary);
+}
+
+.link:hover {
+    color: var(--primary-color);
+}
+
+.btn {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0px 1px 4px 1px var(--primary-color);
+    font-weight: 500;
+}
+
+.btn:hover {
+    background-color: var(--purple);
+    border-color: var(--purple);
+    color: var(--gray);
+    box-shadow: 0px 1px 7px 1px var(--primary-color);
+}
+
+.btn:active {
+    background-color: var(--dark-purple);
+    color: var(--gray);
+    box-shadow: 0px 1px 7px 1px var(--primary-color);
+}
+
+.btn:focus {
+    box-shadow: 0px 1px 7px 1px var(--primary-color);
+}
+
+.btn-cancel {
+    background-color: white;
+    border-color: white;
+    color: black;
+    box-shadow: 0px 1px 4px 1px var(--dark-gray);
+    font-weight: 500;
+}
+
+.btn-cancel:hover {
+    background-color: var(--dark-gray);
+    border-color: var(--dark-gray);
+    color: var(--light-black);
+    box-shadow: 0px 1px 7px 1px var(--gray);
+}
+
+.btn-cancel:active {
+    background-color: var(--gray);
+    border-color: var(--gray);
+    color: var(--light-black);
+    box-shadow: 0px 1px 7px 1px var(--gray);
+}
+
+.btn-cancel:focus {
+    box-shadow: 0px 1px 7px 1px var(--gray);
+}
+
+.icon {
+    color: var(--light-purple);
+}
+
+.icon:hover {
+    color: var(--primary-color);
+}
+
+.icon:active {
+    color: var(--purple);
+}
+
+.navbar-brand {
+    font-size: 18px;
 }
