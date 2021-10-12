@@ -1,95 +1,100 @@
 import { Injectable } from '@angular/core';
-import { CATEGORIES } from '../classes/mock-data';
-import { Question, Answer, Category } from '../classes/classes.model';
+import { CATEGORIES } from '../models/mock-data';
+import { Question, Answer } from '../models/category_question_answer.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
-  temp: string = '';
   constructor() {}
 
   getCategories() {
     return CATEGORIES;
   }
 
-  addQuestion(categoryId: number, question: string) {
-    CATEGORIES.find((category) => category.id === categoryId)?.questions.push(
-      new Question(question)
-    );
+  addQuestion(categoryId: number, question: Question): void {
+    const category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      category.questions.push(question);
+    }
   }
+
   addAnswer(
     categoryId: number,
     questionId: number | undefined,
-    answer: string
+    answer: Answer
   ): void {
-    CATEGORIES.find((category) => category.id === categoryId)
-      ?.questions.find((question) => question.id === questionId)
-      ?.answers.push(new Answer(answer));
+    const category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      const question = category.questions.find(
+        (question) => question.id === questionId
+      );
+      if (question) {
+        question.answers.push(answer);
+      }
+    }
   }
-  editAnswer(
+
+  updateQuestion(
+    categoryId: number,
+    questionId: number,
+    question: Question
+  ): void {
+    const category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      let toReplace = -1;
+      category.questions.forEach((question, index) => {
+        if (question.id === questionId) {
+          toReplace = index;
+        }
+      });
+      category.questions.splice(toReplace, 1, question);
+    }
+  }
+
+  updateAnswer(
     categoryId: number,
     questionId: number | undefined,
     answerId: number | undefined,
-    answer: string
-  ) {
-    const ans = CATEGORIES.find((category) => category.id === categoryId)
-      ?.questions.find((question) => question.id === questionId)
-      ?.answers.find((answer) => answer.id === answerId);
-    if (ans) {
-      ans.answer = answer;
-    }
-  }
-  likeQuestion(categoryId: number, questionId: number): void {
-    const answer = CATEGORIES.find(
-      (category) => category.id === categoryId
-    )?.questions.find((question) => question.id === questionId);
-    if (answer) {
-      answer.likeCount++;
-    }
-  }
-  dislikeQuestion(categoryId: number, questionId: number): void {
-    const answer = CATEGORIES.find(
-      (category) => category.id === categoryId
-    )?.questions.find((question) => question.id === questionId);
-    if (answer) {
-      answer.dislikeCount++;
-    }
-  }
-  deleteQuestion(categoryId: number, questionId: number): void {
-    var category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      category.questions=category.questions.filter((question) => question.id !== questionId);
-    }
-  }
-  likeAnswer(categoryId: number, questionId: number, answerId: number): void {
-    const answer = CATEGORIES.find((category) => category.id === categoryId)
-      ?.questions.find((question) => question.id === questionId)
-      ?.answers.find((answer) => answer.id === answerId);
-    if (answer) {
-      answer.likeCount++;
-    }
-  }
-  dislikeAnswer(
-    categoryId: number,
-    questionId: number,
-    answerId: number
+    answer: Answer
   ): void {
-    const answer = CATEGORIES.find((category) => category.id === categoryId)
-      ?.questions.find((question) => question.id === questionId)
-      ?.answers.find((answer) => answer.id === answerId);
-    if (answer) {
-      answer.dislikeCount++;
+    const category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      const question = category.questions.find(
+        (question) => question.id === questionId
+      );
+      if (question) {
+        let toReplace: number = -1;
+        question.answers.forEach((answer, index) => {
+          if (answer.id === answerId) {
+            toReplace = index;
+          }
+        });
+        question.answers.splice(toReplace, 1, answer);
+      }
     }
   }
-  deleteAnswer(categoryId: number, questionId: number, answerId: number): void {
-    var question = CATEGORIES.find(
-      (category) => category.id === categoryId
-    )?.questions.find((question) => question.id === questionId);
-    if (question) {
-      question.answers = question.answers.filter(
-        (answer) => answer.id !== answerId
+
+  deleteQuestion(categoryId: number, questionId: number): void {
+    const category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      category.questions = category.questions.filter(
+        (question) => question.id !== questionId
       );
+    }
+  }
+
+  deleteAnswer(categoryId: number, questionId: number, answerId: number): void {
+    const category = CATEGORIES.find((category) => category.id === categoryId);
+    if (category) {
+      const question = category.questions.find(
+        (question) => question.id === questionId
+      );
+      if (question) {
+        question.answers = question.answers.filter(
+          (answer) => answer.id !== answerId
+        );
+      }
     }
   }
 }

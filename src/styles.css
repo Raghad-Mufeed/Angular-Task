@@ -23,27 +23,30 @@
 }
 
 .btn {
+    font-weight: 500;
+}
+
+.btn-action {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
     color: white;
     box-shadow: 0px 1px 4px 1px var(--primary-color);
-    font-weight: 500;
 }
 
-.btn:hover {
+.btn-action:hover {
     background-color: var(--purple);
     border-color: var(--purple);
     color: var(--gray);
     box-shadow: 0px 1px 7px 1px var(--primary-color);
 }
 
-.btn:active {
+.btn-action:active {
     background-color: var(--dark-purple);
     color: var(--gray);
     box-shadow: 0px 1px 7px 1px var(--primary-color);
 }
 
-.btn:focus {
+.btn-action:focus {
     box-shadow: 0px 1px 7px 1px var(--primary-color);
 }
 

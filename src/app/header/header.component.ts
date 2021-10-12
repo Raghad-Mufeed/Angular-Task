@@ -1,48 +1,68 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, Event, NavigationStart } from '@angular/router';
 import { CategoryService } from '../services/category.service';
-import { Category } from '../classes/classes.model';
+import { Category } from '../models/category_question_answer.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit {
-  route: string = '';
-  categoryId: number = 1;
-  questionId: number = 1;
-  id: number = 1;
-  category: string = '';
-  CurrentCategory: Category = new Category('', '', '', []);
-  question: string = '';
-  param: string[] = [];
+export class HeaderComponent implements OnInit, OnDestroy {
+  categoryId: number;
+  questionId: number;
+  category: string;
+  question: string;
+  subscription: Subscription;
+
   constructor(private router: Router, private categorySevice: CategoryService) {
-    this.router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
-        this.route = event.url.split('?')[0].slice(1);
-        this.param = event.url.split('?')[1]?.split('&');
-        if (!this.param) {
-          this.category = '';
-          this.question = '';
-        } else if (this.param.length == 1) {
-          this.id = Number(this.param[0].split('=')[1]);
-          this.CurrentCategory = this.categorySevice
-            .getCategories()
-            .find((category) => category.id === this.id!)!;
-          this.category = this.CurrentCategory!.name;
-          this.categoryId = this.id;
-          this.question = '';
-        } else {
-          this.id = Number(this.param[1].split('=')[1]);
-          this.question = this.CurrentCategory.questions.find(
-            (question) => question.id === this.id
-          )!.question;
-          this.questionId = this.id;
-        }
-      }
-    });
+    this.categoryId = 1;
+    this.questionId = 1;
+    this.category = '';
+    this.question = '';
+    this.subscription = new Subscription();
+    this.checkRoute();
   }
 
   ngOnInit(): void {}
+
+  checkRoute(): void {
+    let param: string[] = [];
+    let currentCategory: Category = new Category('', '', '', []);
+
+    this.subscription.add(
+      this.router.events.subscribe((event: Event) => {
+        if (event instanceof NavigationStart) {
+          param = event.url.split('?')[1]?.split('&');
+          if (!param) {
+            this.category = '';
+            this.question = '';
+          } else if (param.length === 1) {
+            let id: number = Number(param[0].split('=')[1]);
+            currentCategory = this.categorySevice
+              .getCategories()
+              .find((category) => category.id === id)!;
+            if (currentCategory) {
+              this.category = currentCategory.name;
+              this.categoryId = id;
+            } else {
+              this.category = '';
+            }
+            this.question = '';
+          } else {
+            let id: number = Number(param[1].split('=')[1]);
+            this.question = currentCategory.questions.find(
+              (question) => question.id === id
+            )!.text;
+            this.questionId = id;
+          }
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 }

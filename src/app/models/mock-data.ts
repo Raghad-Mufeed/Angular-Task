@@ -1,4 +1,4 @@
-import { Category } from './classes.model';
+import { Category } from './category_question_answer.model';
 
 export var CATEGORIES: Category[] = [
   {
@@ -12,20 +12,20 @@ export var CATEGORIES: Category[] = [
     questions: [
       {
         id: 4,
-        question: 'Where can I buy beautiful and updated Angular 5 tempaltes?',
+        text: 'Where can I buy beautiful and updated Angular 5 tempaltes?',
         likeCount: 1,
         dislikeCount: 0,
         answers: [
           {
             id: 7,
-            answer:
+            text:
               'Yes!!! It has lots of benefits such as: Faster rendering, Fewer asynchronous requests, Smaller Angular framework download size and more.',
             likeCount: 2,
             dislikeCount: 0,
           },
           {
             id: 8,
-            answer: "No, It's just the same than JIT, there no benefit at all.",
+            text: "No, It's just the same than JIT, there no benefit at all.",
             likeCount: 0,
             dislikeCount: 1,
           },
@@ -33,14 +33,14 @@ export var CATEGORIES: Category[] = [
       },
       {
         id: 5,
-        question: 'Internationalization (i18n) in Angular 5',
+        text: 'Internationalization (i18n) in Angular 5',
         likeCount: 0,
         dislikeCount: 1,
         answers: [],
       },
       {
         id: 6,
-        question: 'Should I care about AOT?',
+        text: 'Should I care about AOT?',
         likeCount: 2,
         dislikeCount: 0,
         answers: [],

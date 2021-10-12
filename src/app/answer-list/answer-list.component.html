@@ -1,8 +1,31 @@
-<h4 class="mx-5 mt-4 font-weight-bold">{{ question.question }}</h4>
-<button class="btn mx-5 mb-5" type="button" (click)="openFormModal()">
+<h4 class="mx-5 mt-4 font-weight-bold">{{ question.text }}</h4>
+<button class="btn btn-action mx-5 mb-5" type="button" (click)="openAddAnswerModal()">
   New Answer
 </button>
-<div>
-    <app-answer *ngFor="let answer of question.answers; let lastChild = last" [answer]="answer" [lastChild]="lastChild">
-    </app-answer>
+<div *ngFor="let answer of question.answers; let lastChild = last">
+    <div class="row mx-5 d-flex align-items-center">
+        <div class="mx-3">
+            {{ answer.text }}
+        </div>
+    </div>
+    <div class="row mx-5 my-1">
+        <span class="icon ml-3 mr-4"><fa-icon [icon]="faThumbsUp" (click)="likeAnswer(answer)"></fa-icon>
+      {{ answer.likeCount }}</span
+    >
+    <span class="icon mr-4"
+      ><fa-icon [icon]="faThumbsDown" (click)="dislikeAnswer(answer)"></fa-icon>
+      {{ answer.dislikeCount }}</span
+    >
+    <fa-icon
+      [icon]="faTrashAlt"
+      class="icon mr-4"
+      (click)="deleteAnswer(answer.id)"
+    ></fa-icon>
+    <fa-icon
+      [icon]="faPen"
+      class="icon mr-4"
+      (click)="openEditAnswerModal(answer)"
+    ></fa-icon>
+  </div>
+  <hr *ngIf="!lastChild" class="mx-5" />
 </div>

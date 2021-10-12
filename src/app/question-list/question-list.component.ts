@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../services/category.service';
-import { Category } from '../classes/classes.model';
+import { Category, Question } from '../models/category_question_answer.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { FormModalComponent } from '../form-modal/form-modal.component';
+import { ModalComponent } from '../modal/modal.component';
+import {
+  faThumbsUp,
+  faThumbsDown,
+  faTrashAlt,
+} from '@fortawesome/free-regular-svg-icons';
 
 @Component({
   selector: 'app-question-list',
@@ -11,19 +16,21 @@ import { FormModalComponent } from '../form-modal/form-modal.component';
   styleUrls: ['./question-list.component.css'],
 })
 export class QuestionListComponent implements OnInit {
-  category: Category = new Category('', '', '', []);
+  category: Category;
+  faThumbsUp = faThumbsUp;
+  faThumbsDown = faThumbsDown;
+  faTrashAlt = faTrashAlt;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private categoryService: CategoryService,
     private modalService: NgbModal
-  ) {}
-
-  ngOnInit(): void {
-    this.category = this.getCategory();
+  ) {
+    this.category = new Category('', '', '', []);
   }
 
-  getCategory(): Category {
-    return this.categoryService
+  ngOnInit(): void {
+    this.category = this.categoryService
       .getCategories()
       .find(
         (category) =>
@@ -31,23 +38,57 @@ export class QuestionListComponent implements OnInit {
           Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId'))
       )!;
   }
-  
-  openFormModal(): void {
-    const modalRef = this.modalService.open(FormModalComponent, {
+
+  openAddQuestionModal(): void {
+    const modalRef = this.modalService.open(ModalComponent, {
       centered: true,
     });
     modalRef.componentInstance.modal = {
-      type: 1,
-      categoryId: this.category.id,
       title: 'New Question',
-      button: 'Question',
+      buttonText: 'Question',
+      text: '',
     };
     modalRef.result
       .then((result) => {
-        console.log(result);
+        if (result !== 'success') {
+          this.categoryService.addQuestion(
+            this.category.id,
+            new Question(result)
+          );
+        }
       })
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  likeQuestion(currentQuestion: Question): void {
+    let question = new Question(currentQuestion.text);
+    question.id = currentQuestion.id;
+    question.dislikeCount = currentQuestion.dislikeCount;
+    question.likeCount = currentQuestion.likeCount + 1;
+    question.answers = currentQuestion.answers;
+    this.categoryService.updateQuestion(
+      this.category.id,
+      currentQuestion.id,
+      question
+    );
+  }
+
+  dislikeQuestion(currentQuestion: Question): void {
+    let question = new Question(currentQuestion.text);
+    question.id = currentQuestion.id;
+    question.dislikeCount = currentQuestion.dislikeCount + 1;
+    question.likeCount = currentQuestion.likeCount;
+    question.answers = currentQuestion.answers;
+    this.categoryService.updateQuestion(
+      this.category.id,
+      currentQuestion.id,
+      question
+    );
+  }
+
+  deleteQuestion(currentQuestion: Question): void {
+    this.categoryService.deleteQuestion(this.category.id, currentQuestion.id);
   }
 }

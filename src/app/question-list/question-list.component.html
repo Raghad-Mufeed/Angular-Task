@@ -1,8 +1,21 @@
 <h4 class="mx-5 mt-4 font-weight-bold">Learn about: {{category.name}}</h4>
-<button class="btn mx-5 mb-5" type="button" (click)="openFormModal()">
+<button class="btn btn-action mx-5 mb-5" type="button" (click)="openAddQuestionModal()">
     New Question
 </button>
-<div>
-    <app-question *ngFor=" let question of category.questions;let lastChild=last; " [question]="question " [lastChild]="lastChild " [category]="category.id ">
-    </app-question>
+<div *ngFor="let question of category.questions; let lastChild=last;">
+    <div class="row mx-5 d-flex align-items-center">
+        <a class="mx-3 link" [routerLink]="['/question']" [queryParams]="{categoryId: category.id, questionId: question.id}">
+            {{question.text}}
+        </a>
+    </div>
+    <div class="row mx-5 my-1">
+        <span class="icon ml-3 mr-4">
+            <fa-icon [icon]="faThumbsUp" (click)="likeQuestion(question)"></fa-icon> {{question.likeCount}}
+        </span>
+        <span class="icon mr-4">
+            <fa-icon [icon]="faThumbsDown" (click)="dislikeQuestion(question)"></fa-icon> {{question.dislikeCount}}
+        </span>
+        <fa-icon [icon]="faTrashAlt" class="icon mr-4" (click)="deleteQuestion(question)"></fa-icon>{{question.answers.length}} Answers
+    </div>
+    <hr *ngIf="!lastChild" class="mx-5">
 </div>

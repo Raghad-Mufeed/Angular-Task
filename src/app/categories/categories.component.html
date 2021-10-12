@@ -1,5 +1,20 @@
 <h4 class="mx-5 my-4 font-weight-bold">Learn all about Angular</h4>
-<div>
-    <app-category *ngFor="let category of categories; let lastChild = last" [category]="category" [lastChild]="lastChild">
-    </app-category>
+<div *ngFor="let category of categories; let lastChild = last">
+    <div class="row mx-5 my-2 d-flex align-items-center">
+        <div class="col-lg-1 col-md-1 col-sm-2 col-2">
+            <img src="{{ category.imageURL }}" alt="{{ category.name }}" class="img-fluid rounded-circle" />
+        </div>
+        <div class="col-lg-11 col-md-11 col-sm-10 col-10 px-4 box font-size-md">
+            <div class="row font-size-lg">
+                <a class="link" [routerLink]="['/questions']" [queryParams]="{ categoryId: category.id }">{{ category.name }}</a>
+            </div>
+            <div class="row mb-2 category-description">
+                {{ category.description }}
+            </div>
+            <div class="row category-tags">
+                <span class="mr-2 px-3 py-1 category-tag" *ngFor="let tag of category.tags">{{ tag }}</span>
+            </div>
+        </div>
+    </div>
+    <hr *ngIf="!lastChild" class="mx-5" />
 </div>
