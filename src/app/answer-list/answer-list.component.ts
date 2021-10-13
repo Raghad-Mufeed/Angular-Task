@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Question, Answer } from '../models/category_question_answer.model';
 import { CategoryService } from '../services/category.service';
 import { ActivatedRoute } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalComponent } from '../modal/modal.component';
 import {
   faThumbsUp,
   faThumbsDown,
@@ -18,6 +16,11 @@ import { faPen } from '@fortawesome/free-solid-svg-icons';
 })
 export class AnswerListComponent implements OnInit {
   question: Question;
+  answer: Answer;
+  isModalOpened: boolean;
+  modalText: string;
+  title: string;
+  buttonText: string;
   faThumbsUp = faThumbsUp;
   faThumbsDown = faThumbsDown;
   faTrashAlt = faTrashAlt;
@@ -25,119 +28,113 @@ export class AnswerListComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private categoryService: CategoryService,
-    private modalService: NgbModal
+    private categoryService: CategoryService
   ) {
     this.question = new Question('');
+    this.answer = new Answer('');
+    this.isModalOpened = false;
+    this.modalText = '';
+    this.title = '';
+    this.buttonText = '';
   }
 
   ngOnInit(): void {
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
+    );
+    const questionId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('questionId')
+    );
     const category = this.categoryService
       .getCategories()
-      .find(
-        (category) =>
-          category.id ===
-          Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId'))
-      );
+      .find((category) => category.id === categoryId);
     if (category) {
-      this.question = category.questions.find(
-        (question) =>
-          question.id ===
-          Number(this.activatedRoute.snapshot.queryParamMap.get('questionId'))
-      )!;
+      this.question =
+        category.questions.find((question) => question.id === questionId) ||
+        this.question;
     }
   }
 
   openEditAnswerModal(answer: Answer): void {
-    const modalRef = this.modalService.open(ModalComponent, {
-      centered: true,
-    });
-    modalRef.componentInstance.modal = {
-      title: 'Edit Answer',
-      buttonText: 'Edit',
-      text: answer.text,
-    };
-    modalRef.result
-      .then((result) => {
-        if (result !== 'success') {
-          this.editAnswer(answer, result);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.answer = answer;
+    this.modalText = answer.text;
+    this.title = 'Edit Answer';
+    this.buttonText = 'Edit';
+    this.isModalOpened = true;
   }
 
-  editAnswer(currentAnswer: Answer, text: string): void {
-    let answer = new Answer(text);
-    answer.id = currentAnswer.id;
-    answer.likeCount = currentAnswer.likeCount;
-    answer.dislikeCount = currentAnswer.dislikeCount;
+  editAnswer(text: string): void {
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
+    );
+    this.answer.text = text;
     this.categoryService.updateAnswer(
-      Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId')),
+      categoryId,
       this.question.id,
-      currentAnswer.id,
+      this.answer.id,
+      this.answer
+    );
+  }
+
+  likeAnswer(answer: Answer): void {
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
+    );
+    const questionId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('questionId')
+    );
+    answer.likeCount += 1;
+    this.categoryService.updateAnswer(
+      categoryId,
+      questionId,
+      answer.id,
       answer
     );
   }
 
-  likeAnswer(currentAnswer: Answer): void {
-    let answer = new Answer(currentAnswer.text);
-    answer.id = currentAnswer.id;
-    answer.likeCount = currentAnswer.likeCount + 1;
-    answer.dislikeCount = currentAnswer.dislikeCount;
-    this.categoryService.updateAnswer(
-      Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId')),
-      Number(this.activatedRoute.snapshot.queryParamMap.get('questionId')),
-      currentAnswer.id,
-      answer
+  dislikeAnswer(answer: Answer): void {
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );
-  }
-
-  dislikeAnswer(currentAnswer: Answer): void {
-    let answer = new Answer(currentAnswer.text);
-    answer.id = currentAnswer.id;
-    answer.likeCount = currentAnswer.likeCount;
-    answer.dislikeCount = currentAnswer.dislikeCount + 1;
+    const questionId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('questionId')
+    );
+    answer.dislikeCount += 1;
     this.categoryService.updateAnswer(
-      Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId')),
-      Number(this.activatedRoute.snapshot.queryParamMap.get('questionId')),
-      currentAnswer.id,
+      categoryId,
+      questionId,
+      answer.id,
       answer
     );
   }
 
   deleteAnswer(answerId: number): void {
-    this.categoryService.deleteAnswer(
-      Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId')),
-      Number(this.activatedRoute.snapshot.queryParamMap.get('questionId')),
-      answerId
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );
+    const questionId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('questionId')
+    );
+    this.categoryService.deleteAnswer(categoryId, questionId, answerId);
   }
 
   openAddAnswerModal(): void {
-    const modalRef = this.modalService.open(ModalComponent, {
-      centered: true,
-    });
-    modalRef.componentInstance.modal = {
-      title: 'New Answer',
-      buttonText: 'Answer',
-      text: '',
-    };
-    modalRef.result
-      .then((result) => {
-        if (result !== 'success') {
-          this.addAnswer(result);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.modalText = '';
+    this.isModalOpened = true;
+    this.title = 'New Answer';
+    this.buttonText = 'Add';
+  }
+
+  closeModal(): void {
+    this.isModalOpened = false;
   }
 
   addAnswer(text: string): void {
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
+    );
     this.categoryService.addAnswer(
-      Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId')),
+      categoryId,
       this.question.id,
       new Answer(text)
     );

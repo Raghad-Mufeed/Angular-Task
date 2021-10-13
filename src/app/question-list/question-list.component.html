@@ -19,3 +19,4 @@
     </div>
     <hr *ngIf="!lastChild" class="mx-5">
 </div>
+<app-modal [title]="'New Question'" [buttonText]="'Question'" [isModalOpened]="isModalOpened" (newText)="addQuestion($event)" (closeModal)="closeModal()"></app-modal>

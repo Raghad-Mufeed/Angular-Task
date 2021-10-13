@@ -17,8 +17,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   subscription: Subscription;
 
   constructor(private router: Router, private categorySevice: CategoryService) {
-    this.categoryId = 1;
-    this.questionId = 1;
+    this.categoryId = 0;
+    this.questionId = 0;
     this.category = '';
     this.question = '';
     this.subscription = new Subscription();
@@ -29,17 +29,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   checkRoute(): void {
     let param: string[] = [];
-    let currentCategory: Category = new Category('', '', '', []);
+    let currentCategory: Category;
 
     this.subscription.add(
       this.router.events.subscribe((event: Event) => {
         if (event instanceof NavigationStart) {
-          param = event.url.split('?')[1]?.split('&');
+          param = event.url?.split('?')[1]?.split('&');
           if (!param) {
             this.category = '';
             this.question = '';
           } else if (param.length === 1) {
-            let id: number = Number(param[0].split('=')[1]);
+            const id: number = Number(param[0].split('=')[1]);
             currentCategory = this.categorySevice
               .getCategories()
               .find((category) => category.id === id)!;
@@ -51,10 +51,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
             }
             this.question = '';
           } else {
-            let id: number = Number(param[1].split('=')[1]);
-            this.question = currentCategory.questions.find(
+            const id: number = Number(param[1].split('=')[1]);
+            const currentQuestion = currentCategory.questions.find(
               (question) => question.id === id
-            )!.text;
+            );
+            if(currentQuestion){
+              this.question = currentQuestion.text;
+            }
             this.questionId = id;
           }
         }

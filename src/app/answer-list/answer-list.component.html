@@ -29,3 +29,12 @@
   </div>
   <hr *ngIf="!lastChild" class="mx-5" />
 </div>
+<app-modal
+  [title]="title"
+  [buttonText]="buttonText"
+  [text]="modalText"
+  [isModalOpened]="isModalOpened"
+  (newText)="addAnswer($event)"
+  (editAnswer)="editAnswer($event)"
+  (closeModal)="closeModal()"
+></app-modal>

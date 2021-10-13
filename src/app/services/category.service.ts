@@ -19,11 +19,7 @@ export class CategoryService {
     }
   }
 
-  addAnswer(
-    categoryId: number,
-    questionId: number | undefined,
-    answer: Answer
-  ): void {
+  addAnswer(categoryId: number, questionId: number, answer: Answer): void {
     const category = CATEGORIES.find((category) => category.id === categoryId);
     if (category) {
       const question = category.questions.find(
@@ -42,20 +38,19 @@ export class CategoryService {
   ): void {
     const category = CATEGORIES.find((category) => category.id === categoryId);
     if (category) {
-      let toReplace = -1;
-      category.questions.forEach((question, index) => {
-        if (question.id === questionId) {
-          toReplace = index;
-        }
-      });
-      category.questions.splice(toReplace, 1, question);
+      const toReplaceIndex = category.questions.findIndex(
+        (question) => question.id === questionId
+      );
+      if (toReplaceIndex !== -1) {
+        category.questions.splice(toReplaceIndex, 1, question);
+      }
     }
   }
 
   updateAnswer(
     categoryId: number,
-    questionId: number | undefined,
-    answerId: number | undefined,
+    questionId: number,
+    answerId: number,
     answer: Answer
   ): void {
     const category = CATEGORIES.find((category) => category.id === categoryId);
@@ -64,13 +59,12 @@ export class CategoryService {
         (question) => question.id === questionId
       );
       if (question) {
-        let toReplace: number = -1;
-        question.answers.forEach((answer, index) => {
-          if (answer.id === answerId) {
-            toReplace = index;
-          }
-        });
-        question.answers.splice(toReplace, 1, answer);
+        const toReplaceIndex = question.answers.findIndex(
+          (answer) => answer.id === answerId
+        );
+        if (toReplaceIndex !== -1) {
+          question.answers.splice(toReplaceIndex, 1, answer);
+        }
       }
     }
   }

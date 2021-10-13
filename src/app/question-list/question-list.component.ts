@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../services/category.service';
 import { Category, Question } from '../models/category_question_answer.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalComponent } from '../modal/modal.component';
 import {
   faThumbsUp,
   faThumbsDown,
@@ -17,6 +16,7 @@ import {
 })
 export class QuestionListComponent implements OnInit {
   category: Category;
+  isModalOpened: boolean;
   faThumbsUp = faThumbsUp;
   faThumbsDown = faThumbsDown;
   faTrashAlt = faTrashAlt;
@@ -27,63 +27,48 @@ export class QuestionListComponent implements OnInit {
     private modalService: NgbModal
   ) {
     this.category = new Category('', '', '', []);
+    this.isModalOpened = false;
   }
 
   ngOnInit(): void {
+    const categoryId = Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId'));
     this.category = this.categoryService
       .getCategories()
       .find(
         (category) =>
-          category.id ===
-          Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId'))
-      )!;
+          category.id === categoryId
+      ) || this.category;
   }
 
   openAddQuestionModal(): void {
-    const modalRef = this.modalService.open(ModalComponent, {
-      centered: true,
-    });
-    modalRef.componentInstance.modal = {
-      title: 'New Question',
-      buttonText: 'Question',
-      text: '',
-    };
-    modalRef.result
-      .then((result) => {
-        if (result !== 'success') {
-          this.categoryService.addQuestion(
-            this.category.id,
-            new Question(result)
-          );
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.isModalOpened = true;
   }
 
-  likeQuestion(currentQuestion: Question): void {
-    let question = new Question(currentQuestion.text);
-    question.id = currentQuestion.id;
-    question.dislikeCount = currentQuestion.dislikeCount;
-    question.likeCount = currentQuestion.likeCount + 1;
-    question.answers = currentQuestion.answers;
+  closeModal(): void {
+    this.isModalOpened = false;
+  }
+
+  addQuestion(text: string): void {
+    this.categoryService.addQuestion(
+      this.category.id,
+      new Question(text)
+    );
+  }
+
+  likeQuestion(question: Question): void {
+    question.likeCount += 1;
     this.categoryService.updateQuestion(
       this.category.id,
-      currentQuestion.id,
+      question.id,
       question
     );
   }
 
-  dislikeQuestion(currentQuestion: Question): void {
-    let question = new Question(currentQuestion.text);
-    question.id = currentQuestion.id;
-    question.dislikeCount = currentQuestion.dislikeCount + 1;
-    question.likeCount = currentQuestion.likeCount;
-    question.answers = currentQuestion.answers;
+  dislikeQuestion(question: Question): void {
+    question.dislikeCount += 1;
     this.categoryService.updateQuestion(
       this.category.id,
-      currentQuestion.id,
+      question.id,
       question
     );
   }
