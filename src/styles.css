@@ -91,3 +91,7 @@
 .navbar-brand {
     font-size: 18px;
 }
+
+.pointer-cursor {
+    cursor: pointer;
+}

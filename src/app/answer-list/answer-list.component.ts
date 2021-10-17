@@ -18,9 +18,9 @@ export class AnswerListComponent implements OnInit {
   question: Question;
   answer: Answer;
   isModalOpened: boolean;
-  modalText: string;
-  title: string;
-  buttonText: string;
+  modalData: string;
+  modalTitle: string;
+  modalButtonLabel: string;
   faThumbsUp = faThumbsUp;
   faThumbsDown = faThumbsDown;
   faTrashAlt = faTrashAlt;
@@ -33,9 +33,9 @@ export class AnswerListComponent implements OnInit {
     this.question = new Question('');
     this.answer = new Answer('');
     this.isModalOpened = false;
-    this.modalText = '';
-    this.title = '';
-    this.buttonText = '';
+    this.modalData = '';
+    this.modalTitle = '';
+    this.modalButtonLabel = '';
   }
 
   ngOnInit(): void {
@@ -57,13 +57,13 @@ export class AnswerListComponent implements OnInit {
 
   openEditAnswerModal(answer: Answer): void {
     this.answer = answer;
-    this.modalText = answer.text;
-    this.title = 'Edit Answer';
-    this.buttonText = 'Edit';
+    this.modalData = answer.text;
+    this.modalTitle = 'Edit Answer';
+    this.modalButtonLabel = 'Edit';
     this.isModalOpened = true;
   }
 
-  editAnswer(text: string): void {
+  submitEditAnswerModal(text: string): void {
     const categoryId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );
@@ -119,17 +119,17 @@ export class AnswerListComponent implements OnInit {
   }
 
   openAddAnswerModal(): void {
-    this.modalText = '';
+    this.modalData = '';
     this.isModalOpened = true;
-    this.title = 'New Answer';
-    this.buttonText = 'Add';
+    this.modalTitle = 'New Answer';
+    this.modalButtonLabel = 'Add';
   }
 
   closeModal(): void {
     this.isModalOpened = false;
   }
 
-  addAnswer(text: string): void {
+  submitAddAnswerModal(text: string): void {
     const categoryId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );

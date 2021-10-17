@@ -48,7 +48,7 @@ export class QuestionListComponent implements OnInit {
     this.isModalOpened = false;
   }
 
-  addQuestion(text: string): void {
+  submitAddQuestionModal(text: string): void {
     this.categoryService.addQuestion(
       this.category.id,
       new Question(text)
