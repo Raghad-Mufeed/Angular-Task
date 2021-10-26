@@ -1,94 +1,120 @@
 import { Injectable } from '@angular/core';
-import { CATEGORIES } from '../models/mock-data';
-import { Question, Answer } from '../models/category_question_answer.model';
+import {
+  Question,
+  Answer,
+  Category,
+  DTOQuestion,
+  DTOAnswer,
+} from '../models/category_question_answer.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { server_url } from 'src/environments/environment.dev';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
-  constructor() {}
+  categories_url: string;
 
-  getCategories() {
-    return CATEGORIES;
+  constructor(private http: HttpClient) {
+    this.categories_url = server_url + 'categories/';
   }
 
-  addQuestion(categoryId: number, question: Question): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      category.questions.push(question);
-    }
+  getCategories(): Observable<Category[]> {
+    return this.http.get<Category[]>(this.categories_url);
   }
 
-  addAnswer(categoryId: number, questionId: number, answer: Answer): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      const question = category.questions.find(
-        (question) => question.id === questionId
-      );
-      if (question) {
-        question.answers.push(answer);
-      }
-    }
+  getCategory(categoryId: number): Observable<Category> {
+    const category_url = server_url + 'categories/' + categoryId;
+    return this.http.get<Category>(category_url);
+  }
+
+  getQuestions(categoryId: number): Observable<Question[]> {
+    const questions_url =
+      server_url + 'categories/' + categoryId + '/questions';
+    return this.http.get<Question[]>(questions_url);
+  }
+
+  getQuestion(categoryId: number, questionId: number): Observable<Question> {
+    const question_url =
+      server_url + 'categories/' + categoryId + '/questions/' + questionId;
+    return this.http.get<Question>(question_url);
+  }
+
+  getAnswers(categoryId: number, questionId: number): Observable<Answer[]> {
+    const answers_url =
+      server_url +
+      'categories/' +
+      categoryId +
+      '/questions/' +
+      questionId +
+      '/answers';
+    return this.http.get<Answer[]>(answers_url);
+  }
+
+  addQuestion(
+    categoryId: number,
+    dtoQuestion: DTOQuestion
+  ): Observable<string> {
+    const questions_url = this.categories_url + categoryId + '/questions';
+    return this.http.post<string>(questions_url, dtoQuestion);
+  }
+
+  addAnswer(
+    categoryId: number,
+    questionId: number,
+    dtoAnswer: DTOAnswer
+  ): Observable<string> {
+    const answers_url =
+      this.categories_url +
+      categoryId +
+      '/questions/' +
+      questionId +
+      '/answers';
+    return this.http.post<string>(answers_url, dtoAnswer);
   }
 
   updateQuestion(
     categoryId: number,
-    questionId: number,
-    question: Question
-  ): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      const toReplaceIndex = category.questions.findIndex(
-        (question) => question.id === questionId
-      );
-      if (toReplaceIndex !== -1) {
-        category.questions.splice(toReplaceIndex, 1, question);
-      }
-    }
+    dtoQuestion: DTOQuestion
+  ): Observable<string> {
+    const questions_url = this.categories_url + categoryId + '/questions';
+    return this.http.put<string>(questions_url, dtoQuestion);
   }
 
   updateAnswer(
     categoryId: number,
     questionId: number,
-    answerId: number,
-    answer: Answer
-  ): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      const question = category.questions.find(
-        (question) => question.id === questionId
-      );
-      if (question) {
-        const toReplaceIndex = question.answers.findIndex(
-          (answer) => answer.id === answerId
-        );
-        if (toReplaceIndex !== -1) {
-          question.answers.splice(toReplaceIndex, 1, answer);
-        }
-      }
-    }
+    dtoAnswer: DTOAnswer
+  ): Observable<string> {
+    const answers_url =
+      this.categories_url +
+      categoryId +
+      '/questions/' +
+      questionId +
+      '/answers';
+    return this.http.put<string>(answers_url, dtoAnswer);
   }
 
-  deleteQuestion(categoryId: number, questionId: number): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      category.questions = category.questions.filter(
-        (question) => question.id !== questionId
-      );
-    }
+  deleteQuestion(categoryId: number, questionId: number): Observable<string> {
+    const question_url =
+      this.categories_url + categoryId + '/questions/' + questionId;
+      console.log(question_url);
+    return this.http.delete<string>(question_url);
   }
 
-  deleteAnswer(categoryId: number, questionId: number, answerId: number): void {
-    const category = CATEGORIES.find((category) => category.id === categoryId);
-    if (category) {
-      const question = category.questions.find(
-        (question) => question.id === questionId
-      );
-      if (question) {
-        question.answers = question.answers.filter(
-          (answer) => answer.id !== answerId
-        );
-      }
-    }
+  deleteAnswer(
+    categoryId: number,
+    questionId: number,
+    answerId: number
+  ): Observable<string> {
+    const answer_url =
+      this.categories_url +
+      categoryId +
+      '/questions/' +
+      questionId +
+      '/answers/' +
+      answerId;
+    return this.http.delete<string>(answer_url);
   }
 }

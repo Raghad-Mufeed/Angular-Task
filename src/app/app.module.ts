@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -30,6 +32,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
     FontAwesomeModule,
     BrowserAnimationsModule,
     NgbModule,
+    HttpClientModule,
+    MatSnackBarModule,
   ],
   providers: [NgbActiveModal],
   bootstrap: [AppComponent],

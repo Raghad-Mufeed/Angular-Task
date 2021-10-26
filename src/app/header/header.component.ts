@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, Event, NavigationStart } from '@angular/router';
 import { CategoryService } from '../services/category.service';
-import { Category } from '../models/category_question_answer.model';
+import { Category, Question } from '../models/category_question_answer.model';
 import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   question: string;
   subscription: Subscription;
 
-  constructor(private router: Router, private categorySevice: CategoryService) {
+  constructor(private router: Router, private categorySevice: CategoryService, private snackBar: MatSnackBar) {
     this.categoryId = 0;
     this.questionId = 0;
     this.category = '';
@@ -29,7 +30,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   checkRoute(): void {
     let param: string[] = [];
-    let currentCategory: Category;
 
     this.subscription.add(
       this.router.events.subscribe((event: Event) => {
@@ -40,25 +40,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.question = '';
           } else if (param.length === 1) {
             const id: number = Number(param[0].split('=')[1]);
-            currentCategory = this.categorySevice
-              .getCategories()
-              .find((category) => category.id === id)!;
-            if (currentCategory) {
-              this.category = currentCategory.name;
-              this.categoryId = id;
-            } else {
-              this.category = '';
-            }
-            this.question = '';
+            this.categorySevice.getCategory(id).subscribe(result => {this.category = result.name || '';
+              this.categoryId = result.id || 0; this.question = ''}, 
+              error => this.snackBar.open('No category found'));
           } else {
             const id: number = Number(param[1].split('=')[1]);
-            const currentQuestion = currentCategory.questions.find(
-              (question) => question.id === id
-            );
-            if(currentQuestion){
-              this.question = currentQuestion.text;
-            }
-            this.questionId = id;
+            let currentQuestion: Question;
+            this.categorySevice.getQuestion(this.categoryId, id).subscribe(result => {this.question = result.text || '';
+            this.questionId = id}, 
+              error => this.snackBar.open('No question found'));
           }
         }
       })

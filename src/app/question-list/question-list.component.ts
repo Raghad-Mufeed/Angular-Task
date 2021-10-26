@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../services/category.service';
 import { Category, Question } from '../models/category_question_answer.model';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import {
   faThumbsUp,
   faThumbsDown,
@@ -16,6 +17,7 @@ import {
 })
 export class QuestionListComponent implements OnInit {
   category: Category;
+  questions: Question[];
   isModalOpened: boolean;
   faThumbsUp = faThumbsUp;
   faThumbsDown = faThumbsDown;
@@ -24,20 +26,19 @@ export class QuestionListComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private categoryService: CategoryService,
-    private modalService: NgbModal
+    private snackBar: MatSnackBar
   ) {
-    this.category = new Category('', '', '', []);
+    this.category = {id: 0, name: '', description: '', imageURL: '', tags: []};
+    this.questions = [];
     this.isModalOpened = false;
   }
 
   ngOnInit(): void {
     const categoryId = Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId'));
-    this.category = this.categoryService
-      .getCategories()
-      .find(
-        (category) =>
-          category.id === categoryId
-      ) || this.category;
+    this.categoryService.getCategory(categoryId).subscribe(result => this.category = result,
+      error =>  this.snackBar.open('No category found'));
+      this.categoryService.getQuestions(categoryId).subscribe(result => this.questions = result,
+        error =>  this.snackBar.open('No questions found'));
   }
 
   openAddQuestionModal(): void {
@@ -50,30 +51,30 @@ export class QuestionListComponent implements OnInit {
 
   submitAddQuestionModal(text: string): void {
     this.categoryService.addQuestion(
-      this.category.id,
-      new Question(text)
-    );
+      this.category.id || 0 ,
+      {likeCount:0, dislikeCount:0, text: text, categoryId: this.category.id || 0}
+    ).subscribe(result => console.log(result), error => console.log(error));
   }
 
   likeQuestion(question: Question): void {
     question.likeCount += 1;
     this.categoryService.updateQuestion(
-      this.category.id,
-      question.id,
-      question
+      this.category.id || 0,
+      {id: question.id || 0, likeCount: question.likeCount, dislikeCount:question.dislikeCount, 
+        text: question.text, categoryId: this.category.id|| 0}
     );
   }
 
   dislikeQuestion(question: Question): void {
     question.dislikeCount += 1;
     this.categoryService.updateQuestion(
-      this.category.id,
-      question.id,
-      question
+      this.category.id || 0,
+      {id: question.id || 0, likeCount: question.likeCount, dislikeCount: question.dislikeCount, 
+        text: question.text, categoryId: this.category.id|| 0}
     );
   }
 
   deleteQuestion(currentQuestion: Question): void {
-    this.categoryService.deleteQuestion(this.category.id, currentQuestion.id);
+    this.categoryService.deleteQuestion(this.category.id || 0, currentQuestion.id || 0);
   }
 }

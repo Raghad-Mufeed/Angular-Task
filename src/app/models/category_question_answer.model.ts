@@ -1,54 +1,41 @@
-let globalId: number = 9;
-
-export class Answer {
-  id: number;
-  text: string;
+export interface Answer {
+  id?: number;
   likeCount: number;
   dislikeCount: number;
-
-  constructor(text: string) {
-    this.id = globalId++;
-    this.text = text;
-    this.likeCount = 0;
-    this.dislikeCount = 0;
-  }
+  text: string;
+  question: Question;
 }
 
-export class Question {
-  id: number;
-  text: string;
+export interface DTOAnswer {
+  id?: number;
   likeCount: number;
   dislikeCount: number;
-  answers: Answer[];
-
-  constructor(text: string) {
-    this.id = globalId++;
-    this.text = text;
-    this.likeCount = 0;
-    this.dislikeCount = 0;
-    this.answers = [];
-  }
+  text: string;
+  questionId: number;
 }
 
-export class Category {
-  id: number;
+export interface Question {
+  id?: number;
+  likeCount: number;
+  dislikeCount: number;
+  text: string;
+  category: Category;
+  numberOfAnswers?: number;
+}
+
+export interface DTOQuestion {
+  id?: number;
+  likeCount: number;
+  dislikeCount: number;
+  text: string;
+  categoryId: number;
+}
+
+export interface Category {
+  id?: number;
   name: string;
   description: string;
   imageURL: string;
   tags: string[];
-  questions: Question[];
-
-  constructor(
-    name: string,
-    description: string,
-    imageURL: string,
-    tags: string[]
-  ) {
-    this.id = globalId++;
-    this.name = name;
-    this.description = description;
-    this.imageURL = imageURL;
-    this.tags = tags;
-    this.questions = [];
-  }
 }
+
