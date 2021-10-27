@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  HostListener,
+} from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -14,8 +21,7 @@ export class ModalComponent implements OnInit {
   @Output() submitAddModal: EventEmitter<string>;
   @Output() submitEditModal: EventEmitter<string>;
   @Output() closeModal: EventEmitter<boolean>;
-  @HostListener('document:keydown.escape', ['$event']) 
-  
+  @HostListener('document:keydown.escape', ['$event'])
   onKeydownHandler(event: KeyboardEvent) {
     this.closeFormModal();
   }

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Question, Answer } from '../models/category_question_answer.model';
+import {
+  DTOQuestion,
+  DTOAnswer,
+} from '../models/category_question_answer.model';
 import { CategoryService } from '../services/category.service';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -16,9 +19,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./answer-list.component.css'],
 })
 export class AnswerListComponent implements OnInit {
-  question: Question;
-  answer: Answer;
-  answers: Answer[];
+  question: DTOQuestion;
+  answer: DTOAnswer;
+  answers: DTOAnswer[];
   isModalOpened: boolean;
   modalData: string;
   modalTitle: string;
@@ -33,8 +36,8 @@ export class AnswerListComponent implements OnInit {
     private categoryService: CategoryService,
     private snackBar: MatSnackBar
   ) {
-    this.question = {likeCount:0, dislikeCount: 0, text: '', category: {name: '', description:'', imageURL: '', tags: []}};
-    this.answer = {likeCount: 0, dislikeCount:0, text: '', question: {likeCount:0, dislikeCount: 0, text: '', category: {name: '', description:'', imageURL: '', tags: []}}};
+    this.question = { likeCount: 0, dislikeCount: 0, text: '', categoryId: 0 };
+    this.answer = { likeCount: 0, dislikeCount: 0, text: '', questionId: 0 };
     this.answers = [];
     this.isModalOpened = false;
     this.modalData = '';
@@ -49,13 +52,17 @@ export class AnswerListComponent implements OnInit {
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    this.categoryService.getQuestion(categoryId, questionId).subscribe(result => this.question = result, 
-      error => this.snackBar.open('No answers found'));
-    this.categoryService.getAnswers(categoryId, questionId).subscribe(result => this.answers = result,
-      error => this.snackBar.open('No answers found'));
+    this.categoryService.getQuestion(categoryId, questionId).subscribe(
+      (result) => (this.question = result),
+      (error) => this.snackBar.open('No answers found')
+    );
+    this.categoryService.getAnswers(categoryId, questionId).subscribe(
+      (result) => (this.answers = result),
+      (error) => this.snackBar.open('No answers found')
+    );
   }
 
-  openEditAnswerModal(answer: Answer): void {
+  openEditAnswerModal(answer: DTOAnswer): void {
     this.answer = answer;
     this.modalData = answer.text;
     this.modalTitle = 'Edit Answer';
@@ -71,47 +78,60 @@ export class AnswerListComponent implements OnInit {
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
     this.answer.text = text;
-    /*
-    this.categoryService.updateAnswer(
-      categoryId,
-      questionId,
-      {}
-    );
-    */
+    this.categoryService
+      .updateAnswer(categoryId, questionId, {
+        id: this.answer.id,
+        likeCount: this.answer.likeCount,
+        dislikeCount: this.answer.dislikeCount,
+        text: text,
+        questionId: questionId,
+      })
+      .subscribe(
+        (result) => (this.answers = result),
+        (error) => console.log(error)
+      );
   }
 
-  likeAnswer(answer: Answer): void {
+  likeAnswer(answer: DTOAnswer): void {
     const categoryId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    answer.likeCount += 1;
-    /*
-    this.categoryService.updateAnswer(
-      categoryId,
-      questionId,
-      answer
-    );
-    */
+    this.categoryService
+      .updateAnswer(categoryId, questionId, {
+        id: answer.id,
+        likeCount: answer.likeCount + 1,
+        dislikeCount: answer.dislikeCount,
+        text: answer.text,
+        questionId: questionId,
+      })
+      .subscribe(
+        (result) => (this.answers = result),
+        (error) => console.log(error)
+      );
   }
 
-  dislikeAnswer(answer: Answer): void {
+  dislikeAnswer(answer: DTOAnswer): void {
     const categoryId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    answer.dislikeCount += 1;
-    /*
-    this.categoryService.updateAnswer(
-      categoryId,
-      questionId,
-      answer
-    );
-    */
+    this.categoryService
+      .updateAnswer(categoryId, questionId, {
+        id: answer.id,
+        likeCount: answer.likeCount,
+        dislikeCount: answer.dislikeCount + 1,
+        text: answer.text,
+        questionId: questionId,
+      })
+      .subscribe(
+        (result) => (this.answers = result),
+        (error) => console.log(error)
+      );
   }
 
   deleteAnswer(answerId: number): void {
@@ -121,7 +141,12 @@ export class AnswerListComponent implements OnInit {
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    this.categoryService.deleteAnswer(categoryId, questionId, answerId);
+    this.categoryService
+      .deleteAnswer(categoryId, questionId, answerId)
+      .subscribe(
+        (result) => (this.answers = result),
+        (error) => console.log(error)
+      );
   }
 
   openAddAnswerModal(): void {
@@ -142,12 +167,16 @@ export class AnswerListComponent implements OnInit {
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    /*
-    this.categoryService.addAnswer(
-      categoryId,
-      questionId,
-      {likeCount: 0, dislikeCount:0, text: text, question: {id: questionId, likeCount:0, dislikeCount: 0, text: '', category: {id: categoryId, name: '', description:'', imageURL: '', tags: []}}}
-    );
-    */
+    this.categoryService
+      .addAnswer(categoryId, questionId, {
+        likeCount: 0,
+        dislikeCount: 0,
+        text: text,
+        questionId: questionId,
+      })
+      .subscribe(
+        (result) => (this.answers = result),
+        (error) => console.log(error)
+      );
   }
 }

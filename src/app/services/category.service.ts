@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  Question,
-  Answer,
   Category,
   DTOQuestion,
   DTOAnswer,
@@ -29,19 +27,19 @@ export class CategoryService {
     return this.http.get<Category>(category_url);
   }
 
-  getQuestions(categoryId: number): Observable<Question[]> {
+  getQuestions(categoryId: number): Observable<DTOQuestion[]> {
     const questions_url =
       server_url + 'categories/' + categoryId + '/questions';
-    return this.http.get<Question[]>(questions_url);
+    return this.http.get<DTOQuestion[]>(questions_url);
   }
 
-  getQuestion(categoryId: number, questionId: number): Observable<Question> {
+  getQuestion(categoryId: number, questionId: number): Observable<DTOQuestion> {
     const question_url =
       server_url + 'categories/' + categoryId + '/questions/' + questionId;
-    return this.http.get<Question>(question_url);
+    return this.http.get<DTOQuestion>(question_url);
   }
 
-  getAnswers(categoryId: number, questionId: number): Observable<Answer[]> {
+  getAnswers(categoryId: number, questionId: number): Observable<DTOAnswer[]> {
     const answers_url =
       server_url +
       'categories/' +
@@ -49,65 +47,67 @@ export class CategoryService {
       '/questions/' +
       questionId +
       '/answers';
-    return this.http.get<Answer[]>(answers_url);
+    return this.http.get<DTOAnswer[]>(answers_url);
   }
 
   addQuestion(
     categoryId: number,
     dtoQuestion: DTOQuestion
-  ): Observable<string> {
+  ): Observable<DTOQuestion[]> {
     const questions_url = this.categories_url + categoryId + '/questions';
-    return this.http.post<string>(questions_url, dtoQuestion);
+    return this.http.post<DTOQuestion[]>(questions_url, dtoQuestion);
   }
 
   addAnswer(
     categoryId: number,
     questionId: number,
     dtoAnswer: DTOAnswer
-  ): Observable<string> {
+  ): Observable<DTOAnswer[]> {
     const answers_url =
       this.categories_url +
       categoryId +
       '/questions/' +
       questionId +
       '/answers';
-    return this.http.post<string>(answers_url, dtoAnswer);
+    return this.http.post<DTOAnswer[]>(answers_url, dtoAnswer);
   }
 
   updateQuestion(
     categoryId: number,
     dtoQuestion: DTOQuestion
-  ): Observable<string> {
+  ): Observable<DTOQuestion[]> {
     const questions_url = this.categories_url + categoryId + '/questions';
-    return this.http.put<string>(questions_url, dtoQuestion);
+    return this.http.put<DTOQuestion[]>(questions_url, dtoQuestion);
   }
 
   updateAnswer(
     categoryId: number,
     questionId: number,
     dtoAnswer: DTOAnswer
-  ): Observable<string> {
+  ): Observable<DTOAnswer[]> {
     const answers_url =
       this.categories_url +
       categoryId +
       '/questions/' +
       questionId +
       '/answers';
-    return this.http.put<string>(answers_url, dtoAnswer);
+    return this.http.put<DTOAnswer[]>(answers_url, dtoAnswer);
   }
 
-  deleteQuestion(categoryId: number, questionId: number): Observable<string> {
+  deleteQuestion(
+    categoryId: number,
+    questionId: number
+  ): Observable<DTOQuestion[]> {
     const question_url =
       this.categories_url + categoryId + '/questions/' + questionId;
-      console.log(question_url);
-    return this.http.delete<string>(question_url);
+    return this.http.delete<DTOQuestion[]>(question_url);
   }
 
   deleteAnswer(
     categoryId: number,
     questionId: number,
     answerId: number
-  ): Observable<string> {
+  ): Observable<DTOAnswer[]> {
     const answer_url =
       this.categories_url +
       categoryId +
@@ -115,6 +115,6 @@ export class CategoryService {
       questionId +
       '/answers/' +
       answerId;
-    return this.http.delete<string>(answer_url);
+    return this.http.delete<DTOAnswer[]>(answer_url);
   }
 }

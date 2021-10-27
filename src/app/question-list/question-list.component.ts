@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../services/category.service';
-import { Category, Question } from '../models/category_question_answer.model';
+import {
+  Category,
+  DTOQuestion,
+} from '../models/category_question_answer.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import {
@@ -17,7 +20,7 @@ import {
 })
 export class QuestionListComponent implements OnInit {
   category: Category;
-  questions: Question[];
+  questions: DTOQuestion[];
   isModalOpened: boolean;
   faThumbsUp = faThumbsUp;
   faThumbsDown = faThumbsDown;
@@ -28,17 +31,29 @@ export class QuestionListComponent implements OnInit {
     private categoryService: CategoryService,
     private snackBar: MatSnackBar
   ) {
-    this.category = {id: 0, name: '', description: '', imageURL: '', tags: []};
+    this.category = {
+      id: 0,
+      name: '',
+      description: '',
+      imageURL: '',
+      tags: [],
+    };
     this.questions = [];
     this.isModalOpened = false;
   }
 
   ngOnInit(): void {
-    const categoryId = Number(this.activatedRoute.snapshot.queryParamMap.get('categoryId'));
-    this.categoryService.getCategory(categoryId).subscribe(result => this.category = result,
-      error =>  this.snackBar.open('No category found'));
-      this.categoryService.getQuestions(categoryId).subscribe(result => this.questions = result,
-        error =>  this.snackBar.open('No questions found'));
+    const categoryId = Number(
+      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
+    );
+    this.categoryService.getCategory(categoryId).subscribe(
+      (result) => (this.category = result),
+      (error) => this.snackBar.open('No category found')
+    );
+    this.categoryService.getQuestions(categoryId).subscribe(
+      (result) => (this.questions = result),
+      (error) => this.snackBar.open('No questions found')
+    );
   }
 
   openAddQuestionModal(): void {
@@ -50,31 +65,55 @@ export class QuestionListComponent implements OnInit {
   }
 
   submitAddQuestionModal(text: string): void {
-    this.categoryService.addQuestion(
-      this.category.id || 0 ,
-      {likeCount:0, dislikeCount:0, text: text, categoryId: this.category.id || 0}
-    ).subscribe(result => console.log(result), error => console.log(error));
+    this.categoryService
+      .addQuestion(this.category.id || 0, {
+        likeCount: 0,
+        dislikeCount: 0,
+        text: text,
+        categoryId: this.category.id || 0,
+      })
+      .subscribe(
+        (result) => (this.questions = result),
+        (error) => console.log(error)
+      );
   }
 
-  likeQuestion(question: Question): void {
-    question.likeCount += 1;
-    this.categoryService.updateQuestion(
-      this.category.id || 0,
-      {id: question.id || 0, likeCount: question.likeCount, dislikeCount:question.dislikeCount, 
-        text: question.text, categoryId: this.category.id|| 0}
-    );
+  likeQuestion(question: DTOQuestion): void {
+    this.categoryService
+      .updateQuestion(this.category.id || 0, {
+        id: question.id || 0,
+        likeCount: question.likeCount + 1,
+        dislikeCount: question.dislikeCount,
+        text: question.text,
+        categoryId: this.category.id || 0,
+      })
+      .subscribe(
+        (result) => (this.questions = result),
+        (error) => console.log(error)
+      );
   }
 
-  dislikeQuestion(question: Question): void {
-    question.dislikeCount += 1;
-    this.categoryService.updateQuestion(
-      this.category.id || 0,
-      {id: question.id || 0, likeCount: question.likeCount, dislikeCount: question.dislikeCount, 
-        text: question.text, categoryId: this.category.id|| 0}
-    );
+  dislikeQuestion(question: DTOQuestion): void {
+    this.categoryService
+      .updateQuestion(this.category.id || 0, {
+        id: question.id || 0,
+        likeCount: question.likeCount,
+        dislikeCount: question.dislikeCount + 1,
+        text: question.text,
+        categoryId: this.category.id || 0,
+      })
+      .subscribe(
+        (result) => (this.questions = result),
+        (error) => console.log(error)
+      );
   }
 
-  deleteQuestion(currentQuestion: Question): void {
-    this.categoryService.deleteQuestion(this.category.id || 0, currentQuestion.id || 0);
+  deleteQuestion(currentQuestion: DTOQuestion): void {
+    this.categoryService
+      .deleteQuestion(this.category.id || 0, currentQuestion.id || 0)
+      .subscribe(
+        (result) => (this.questions = result),
+        (error) => console.log(error)
+      );
   }
 }
