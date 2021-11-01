@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  DTOQuestion,
-  DTOAnswer,
-} from '../models/category_question_answer.model';
-import { CategoryService } from '../services/category.service';
+import { Question } from '../models/question.model';
+import { Answer } from '../models/answer.model';
+import { AnswerService } from '../services/answer.service';
+import { QuestionService } from '../services/question.service';
 import { ActivatedRoute } from '@angular/router';
 import {
   faThumbsUp,
@@ -19,9 +18,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./answer-list.component.css'],
 })
 export class AnswerListComponent implements OnInit {
-  question: DTOQuestion;
-  answer: DTOAnswer;
-  answers: DTOAnswer[];
+  question: Question;
+  answer: Answer;
+  answers: Answer[];
   isModalOpened: boolean;
   modalData: string;
   modalTitle: string;
@@ -33,11 +32,44 @@ export class AnswerListComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private categoryService: CategoryService,
+    private questionSerivce: QuestionService,
+    private answerService: AnswerService,
     private snackBar: MatSnackBar
   ) {
-    this.question = { likeCount: 0, dislikeCount: 0, text: '', categoryId: 0 };
-    this.answer = { likeCount: 0, dislikeCount: 0, text: '', questionId: 0 };
+    this.question = {
+      id: 0,
+      likeCount: 0,
+      dislikeCount: 0,
+      text: '',
+      category: {
+        id: 0,
+        name: '',
+        description: '',
+        imageURL: '',
+        tags: [],
+      },
+      numberOfAnswers: 0,
+    };
+    this.answer = {
+      id: 0,
+      likeCount: 0,
+      dislikeCount: 0,
+      text: '',
+      question: {
+        id: 0,
+        likeCount: 0,
+        dislikeCount: 0,
+        text: '',
+        category: {
+          id: 0,
+          name: '',
+          description: '',
+          imageURL: '',
+          tags: [],
+        },
+        numberOfAnswers: 0,
+      },
+    };
     this.answers = [];
     this.isModalOpened = false;
     this.modalData = '';
@@ -52,17 +84,21 @@ export class AnswerListComponent implements OnInit {
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    this.categoryService.getQuestion(categoryId, questionId).subscribe(
+    this.questionSerivce.getQuestion(categoryId).subscribe(
       (result) => (this.question = result),
       (error) => this.snackBar.open('No answers found')
     );
-    this.categoryService.getAnswers(categoryId, questionId).subscribe(
-      (result) => (this.answers = result),
+    this.answerService.getAnswers(questionId).subscribe(
+      (result) => {this.answers = result;
+          this.answers.sort(function (a, b) {
+            return a.id - b.id;
+          });
+        },
       (error) => this.snackBar.open('No answers found')
     );
   }
 
-  openEditAnswerModal(answer: DTOAnswer): void {
+  openEditAnswerModal(answer: Answer): void {
     this.answer = answer;
     this.modalData = answer.text;
     this.modalTitle = 'Edit Answer';
@@ -71,15 +107,12 @@ export class AnswerListComponent implements OnInit {
   }
 
   submitEditAnswerModal(text: string): void {
-    const categoryId = Number(
-      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
-    );
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
     this.answer.text = text;
-    this.categoryService
-      .updateAnswer(categoryId, questionId, {
+    this.answerService
+      .updateAnswer({
         id: this.answer.id,
         likeCount: this.answer.likeCount,
         dislikeCount: this.answer.dislikeCount,
@@ -87,66 +120,54 @@ export class AnswerListComponent implements OnInit {
         questionId: questionId,
       })
       .subscribe(
-        (result) => (this.answers = result),
+        (result) => {},
         (error) => console.log(error)
       );
   }
 
-  likeAnswer(answer: DTOAnswer): void {
-    const categoryId = Number(
-      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
-    );
+  likeAnswer(answer: Answer): void {
+    answer.likeCount++;
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    this.categoryService
-      .updateAnswer(categoryId, questionId, {
+    this.answerService
+      .updateAnswer({
         id: answer.id,
-        likeCount: answer.likeCount + 1,
+        likeCount: answer.likeCount,
         dislikeCount: answer.dislikeCount,
         text: answer.text,
         questionId: questionId,
       })
       .subscribe(
-        (result) => (this.answers = result),
+        (result) => {},
         (error) => console.log(error)
       );
   }
 
-  dislikeAnswer(answer: DTOAnswer): void {
-    const categoryId = Number(
-      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
-    );
+  dislikeAnswer(answer: Answer): void {
+    answer.dislikeCount++;
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    this.categoryService
-      .updateAnswer(categoryId, questionId, {
+    this.answerService
+      .updateAnswer({
         id: answer.id,
         likeCount: answer.likeCount,
-        dislikeCount: answer.dislikeCount + 1,
+        dislikeCount: answer.dislikeCount,
         text: answer.text,
         questionId: questionId,
       })
       .subscribe(
-        (result) => (this.answers = result),
+        (result) => {},
         (error) => console.log(error)
       );
   }
 
   deleteAnswer(answerId: number): void {
-    const categoryId = Number(
-      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
+    this.answerService.deleteAnswer(answerId).subscribe(
+      (result) => {this.answers = this.answers.filter(answer => answer.id !== answerId);},
+      (error) => console.log(error)
     );
-    const questionId = Number(
-      this.activatedRoute.snapshot.queryParamMap.get('questionId')
-    );
-    this.categoryService
-      .deleteAnswer(categoryId, questionId, answerId)
-      .subscribe(
-        (result) => (this.answers = result),
-        (error) => console.log(error)
-      );
   }
 
   openAddAnswerModal(): void {
@@ -161,21 +182,19 @@ export class AnswerListComponent implements OnInit {
   }
 
   submitAddAnswerModal(text: string): void {
-    const categoryId = Number(
-      this.activatedRoute.snapshot.queryParamMap.get('categoryId')
-    );
     const questionId = Number(
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
-    this.categoryService
-      .addAnswer(categoryId, questionId, {
+    this.answerService
+      .addAnswer({
+        id: 0,
         likeCount: 0,
         dislikeCount: 0,
         text: text,
         questionId: questionId,
       })
       .subscribe(
-        (result) => (this.answers = result),
+        (result) => this.answers.push(result),
         (error) => console.log(error)
       );
   }

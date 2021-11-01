@@ -17,7 +17,7 @@
             <fa-icon class="pointer-cursor" [icon]="faThumbsDown" (click)="dislikeQuestion(question)"></fa-icon>
             {{question.dislikeCount}}
         </span>
-        <fa-icon [icon]="faTrashAlt" class="icon mr-4 pointer-cursor" (click)="deleteQuestion(question)">
+        <fa-icon [icon]="faTrashAlt" class="icon mr-4 pointer-cursor" (click)="deleteQuestion(question.id)">
         </fa-icon>{{question.numberOfAnswers}} Answers
     </div>
     <hr *ngIf="!lastChild" class="mx-5">

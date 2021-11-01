@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Category } from '../models/category_question_answer.model';
+import { Category } from '../models/category.model';
 import { CategoryService } from '../services/category.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 

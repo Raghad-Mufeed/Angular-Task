@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, Event, NavigationStart } from '@angular/router';
 import { CategoryService } from '../services/category.service';
+import { QuestionService } from '../services/question.service';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -19,6 +20,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private categorySevice: CategoryService,
+    private questionService: QuestionService,
     private snackBar: MatSnackBar
   ) {
     this.categoryId = 0;
@@ -53,7 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             );
           } else {
             const id: number = Number(param[1].split('=')[1]);
-            this.categorySevice.getQuestion(this.categoryId, id).subscribe(
+            this.questionService.getQuestion(id).subscribe(
               (result) => {
                 this.question = result.text || '';
                 this.questionId = id;

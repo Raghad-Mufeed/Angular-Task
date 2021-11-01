@@ -1,1 +1,1 @@
-export const server_url: String = 'http://localhost:9999/';
+export const SERVER_URL: String = 'http://localhost:9999/';

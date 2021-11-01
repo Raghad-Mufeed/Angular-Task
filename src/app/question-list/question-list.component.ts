@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../services/category.service';
-import {
-  Category,
-  DTOQuestion,
-} from '../models/category_question_answer.model';
+import { QuestionService } from '../services/question.service';
+import { Category } from '../models/category.model';
+import { Question } from '../models/question.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import {
@@ -20,7 +19,7 @@ import {
 })
 export class QuestionListComponent implements OnInit {
   category: Category;
-  questions: DTOQuestion[];
+  questions: Question[];
   isModalOpened: boolean;
   faThumbsUp = faThumbsUp;
   faThumbsDown = faThumbsDown;
@@ -29,6 +28,7 @@ export class QuestionListComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private categoryService: CategoryService,
+    private questionService: QuestionService,
     private snackBar: MatSnackBar
   ) {
     this.category = {
@@ -50,8 +50,13 @@ export class QuestionListComponent implements OnInit {
       (result) => (this.category = result),
       (error) => this.snackBar.open('No category found')
     );
-    this.categoryService.getQuestions(categoryId).subscribe(
-      (result) => (this.questions = result),
+    this.questionService.getQuestions(categoryId).subscribe(
+      (result) => {
+        this.questions = result;
+        this.questions.sort(function (a, b) {
+          return a.id - b.id;
+        });
+      },
       (error) => this.snackBar.open('No questions found')
     );
   }
@@ -65,55 +70,57 @@ export class QuestionListComponent implements OnInit {
   }
 
   submitAddQuestionModal(text: string): void {
-    this.categoryService
-      .addQuestion(this.category.id || 0, {
+    this.questionService
+      .addQuestion({
+        id: 0,
         likeCount: 0,
         dislikeCount: 0,
         text: text,
         categoryId: this.category.id || 0,
       })
       .subscribe(
-        (result) => (this.questions = result),
+        (result) => this.questions.push(result),
         (error) => console.log(error)
       );
   }
 
-  likeQuestion(question: DTOQuestion): void {
-    this.categoryService
-      .updateQuestion(this.category.id || 0, {
+  likeQuestion(question: Question): void {
+    question.likeCount++;
+    this.questionService
+      .updateQuestion({
         id: question.id || 0,
-        likeCount: question.likeCount + 1,
+        likeCount: question.likeCount,
         dislikeCount: question.dislikeCount,
         text: question.text,
         categoryId: this.category.id || 0,
       })
       .subscribe(
-        (result) => (this.questions = result),
+        (result) => {},
         (error) => console.log(error)
       );
   }
 
-  dislikeQuestion(question: DTOQuestion): void {
-    this.categoryService
-      .updateQuestion(this.category.id || 0, {
+  dislikeQuestion(question: Question): void {
+    question.dislikeCount++;
+    this.questionService
+      .updateQuestion({
         id: question.id || 0,
         likeCount: question.likeCount,
-        dislikeCount: question.dislikeCount + 1,
+        dislikeCount: question.dislikeCount,
         text: question.text,
         categoryId: this.category.id || 0,
       })
       .subscribe(
-        (result) => (this.questions = result),
+        (result) => {},
         (error) => console.log(error)
       );
   }
 
-  deleteQuestion(currentQuestion: DTOQuestion): void {
-    this.categoryService
-      .deleteQuestion(this.category.id || 0, currentQuestion.id || 0)
-      .subscribe(
-        (result) => (this.questions = result),
-        (error) => console.log(error)
-      );
+  deleteQuestion(questionId: number): void {
+    this.questionService.deleteQuestion(questionId || 0).subscribe(
+      (result) =>
+        this.questions = this.questions.filter((question) => question.id !== questionId),
+      (error) => console.log(error)
+    );
   }
 }
