@@ -20,7 +20,11 @@ export class CategoriesComponent implements OnInit {
 
   ngOnInit(): void {
     this.categoryService.getCategories().subscribe(
-      (result) => (this.categories = result),
+      (result) => {
+        result.forEach((category) => {
+          this.categories.push(new Category().fromDTO(category));
+        });
+      },
       (error) => this.snackBar.open('No categories found')
     );
   }

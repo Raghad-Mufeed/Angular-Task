@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { QuestionDTO, Question } from '../models/question.model';
+import { QuestionWriteDTO, QuestionReadDTO } from '../models/question.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SERVER_URL } from 'src/environments/environment.dev';
@@ -14,22 +14,22 @@ export class QuestionService {
     this.questions_url = SERVER_URL + 'questions/';
   }
 
-  getQuestions(categoryId: number): Observable<Question[]> {
+  getQuestions(categoryId: number): Observable<QuestionReadDTO[]> {
     const url = this.questions_url + "?categoryId=" + categoryId;
-    return this.http.get<Question[]>(url);
+    return this.http.get<QuestionReadDTO[]>(url);
   }
 
-  getQuestion(questionId: number): Observable<Question> {
+  getQuestion(questionId: number): Observable<QuestionReadDTO> {
     const url = this.questions_url + questionId;
-    return this.http.get<Question>(url);
+    return this.http.get<QuestionReadDTO>(url);
   }
 
-  addQuestion(questionDTO: QuestionDTO): Observable<Question> {
-    return this.http.post<Question>(this.questions_url, questionDTO);
+  addQuestion(questionDTO: QuestionWriteDTO): Observable<QuestionReadDTO> {
+    return this.http.post<QuestionReadDTO>(this.questions_url, questionDTO);
   }
 
-  updateQuestion(questionDTO: QuestionDTO): Observable<Question> {
-    return this.http.put<Question>(this.questions_url, questionDTO);
+  updateQuestion(questionDTO: QuestionWriteDTO): Observable<QuestionReadDTO> {
+    return this.http.put<QuestionReadDTO>(this.questions_url, questionDTO);
   }
 
   deleteQuestion(questionId: number): Observable<string> {

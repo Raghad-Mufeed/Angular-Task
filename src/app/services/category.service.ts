@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Category } from '../models/category.model';
+import { CategoryReadDTO } from '../models/category.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SERVER_URL } from 'src/environments/environment.dev';
@@ -14,12 +14,12 @@ export class CategoryService {
     this.categories_url = SERVER_URL + 'categories/';
   }
 
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.categories_url);
+  getCategories(): Observable<CategoryReadDTO[]> {
+    return this.http.get<CategoryReadDTO[]>(this.categories_url);
   }
 
-  getCategory(categoryId: number): Observable<Category> {
+  getCategory(categoryId: number): Observable<CategoryReadDTO> {
     const url = this.categories_url + categoryId;
-    return this.http.get<Category>(url);
+    return this.http.get<CategoryReadDTO>(url);
   }
 }

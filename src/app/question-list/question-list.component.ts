@@ -31,13 +31,7 @@ export class QuestionListComponent implements OnInit {
     private questionService: QuestionService,
     private snackBar: MatSnackBar
   ) {
-    this.category = {
-      id: 0,
-      name: '',
-      description: '',
-      imageURL: '',
-      tags: [],
-    };
+    this.category = new Category();
     this.questions = [];
     this.isModalOpened = false;
   }
@@ -47,12 +41,12 @@ export class QuestionListComponent implements OnInit {
       this.activatedRoute.snapshot.queryParamMap.get('categoryId')
     );
     this.categoryService.getCategory(categoryId).subscribe(
-      (result) => (this.category = result),
+      (result) => (this.category = new Category().fromDTO(result)),
       (error) => this.snackBar.open('No category found')
     );
     this.questionService.getQuestions(categoryId).subscribe(
       (result) => {
-        this.questions = result;
+        result.forEach(question => this.questions.push(new Question().fromDTO(question)));
         this.questions.sort(function (a, b) {
           return a.id - b.id;
         });
@@ -79,7 +73,7 @@ export class QuestionListComponent implements OnInit {
         categoryId: this.category.id || 0,
       })
       .subscribe(
-        (result) => this.questions.push(result),
+        (result) => this.questions.push(new Question().fromDTO(result)),
         (error) => console.log(error)
       );
   }
@@ -87,13 +81,7 @@ export class QuestionListComponent implements OnInit {
   likeQuestion(question: Question): void {
     question.likeCount++;
     this.questionService
-      .updateQuestion({
-        id: question.id || 0,
-        likeCount: question.likeCount,
-        dislikeCount: question.dislikeCount,
-        text: question.text,
-        categoryId: this.category.id || 0,
-      })
+      .updateQuestion(question.toDTO())
       .subscribe(
         (result) => {},
         (error) => console.log(error)
@@ -103,13 +91,7 @@ export class QuestionListComponent implements OnInit {
   dislikeQuestion(question: Question): void {
     question.dislikeCount++;
     this.questionService
-      .updateQuestion({
-        id: question.id || 0,
-        likeCount: question.likeCount,
-        dislikeCount: question.dislikeCount,
-        text: question.text,
-        categoryId: this.category.id || 0,
-      })
+      .updateQuestion(question.toDTO())
       .subscribe(
         (result) => {},
         (error) => console.log(error)

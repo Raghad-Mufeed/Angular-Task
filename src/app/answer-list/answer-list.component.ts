@@ -36,40 +36,8 @@ export class AnswerListComponent implements OnInit {
     private answerService: AnswerService,
     private snackBar: MatSnackBar
   ) {
-    this.question = {
-      id: 0,
-      likeCount: 0,
-      dislikeCount: 0,
-      text: '',
-      category: {
-        id: 0,
-        name: '',
-        description: '',
-        imageURL: '',
-        tags: [],
-      },
-      numberOfAnswers: 0,
-    };
-    this.answer = {
-      id: 0,
-      likeCount: 0,
-      dislikeCount: 0,
-      text: '',
-      question: {
-        id: 0,
-        likeCount: 0,
-        dislikeCount: 0,
-        text: '',
-        category: {
-          id: 0,
-          name: '',
-          description: '',
-          imageURL: '',
-          tags: [],
-        },
-        numberOfAnswers: 0,
-      },
-    };
+    this.question = new Question();
+    this.answer = new Answer();
     this.answers = [];
     this.isModalOpened = false;
     this.modalData = '';
@@ -85,11 +53,11 @@ export class AnswerListComponent implements OnInit {
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
     this.questionSerivce.getQuestion(categoryId).subscribe(
-      (result) => (this.question = result),
+      (result) => (this.question = new Question().fromDTO(result)),
       (error) => this.snackBar.open('No answers found')
     );
     this.answerService.getAnswers(questionId).subscribe(
-      (result) => {this.answers = result;
+      (result) => {result.forEach(answer => this.answers.push(new Answer().fromDto(answer)));
           this.answers.sort(function (a, b) {
             return a.id - b.id;
           });
@@ -112,13 +80,7 @@ export class AnswerListComponent implements OnInit {
     );
     this.answer.text = text;
     this.answerService
-      .updateAnswer({
-        id: this.answer.id,
-        likeCount: this.answer.likeCount,
-        dislikeCount: this.answer.dislikeCount,
-        text: text,
-        questionId: questionId,
-      })
+      .updateAnswer(this.answer.toDTO())
       .subscribe(
         (result) => {},
         (error) => console.log(error)
@@ -131,13 +93,7 @@ export class AnswerListComponent implements OnInit {
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
     this.answerService
-      .updateAnswer({
-        id: answer.id,
-        likeCount: answer.likeCount,
-        dislikeCount: answer.dislikeCount,
-        text: answer.text,
-        questionId: questionId,
-      })
+      .updateAnswer(answer.toDTO())
       .subscribe(
         (result) => {},
         (error) => console.log(error)
@@ -150,13 +106,7 @@ export class AnswerListComponent implements OnInit {
       this.activatedRoute.snapshot.queryParamMap.get('questionId')
     );
     this.answerService
-      .updateAnswer({
-        id: answer.id,
-        likeCount: answer.likeCount,
-        dislikeCount: answer.dislikeCount,
-        text: answer.text,
-        questionId: questionId,
-      })
+      .updateAnswer(answer.toDTO())
       .subscribe(
         (result) => {},
         (error) => console.log(error)
@@ -194,7 +144,7 @@ export class AnswerListComponent implements OnInit {
         questionId: questionId,
       })
       .subscribe(
-        (result) => this.answers.push(result),
+        (result) => this.answers.push(new Answer().fromDto(result)),
         (error) => console.log(error)
       );
   }

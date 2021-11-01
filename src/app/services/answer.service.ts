@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AnswerDTO, Answer } from '../models/answer.model';
+import { AnswerWriteDTO, AnswerReadDTO } from '../models/answer.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SERVER_URL } from 'src/environments/environment.dev';
@@ -14,17 +14,17 @@ export class AnswerService {
     this.answers_url = SERVER_URL + 'answers/';
   }
 
-  getAnswers(questionId: number): Observable<Answer[]> {
+  getAnswers(questionId: number): Observable<AnswerReadDTO[]> {
     const url = this.answers_url + "?questionId=" + questionId;
-    return this.http.get<Answer[]>(url);
+    return this.http.get<AnswerReadDTO[]>(url);
   }
 
-  addAnswer(answerDTO: AnswerDTO): Observable<Answer> {
-    return this.http.post<Answer>(this.answers_url, answerDTO);
+  addAnswer(answerDTO: AnswerWriteDTO): Observable<AnswerReadDTO> {
+    return this.http.post<AnswerReadDTO>(this.answers_url, answerDTO);
   }
 
-  updateAnswer(answerDTO: AnswerDTO): Observable<Answer> {
-    return this.http.put<Answer>(this.answers_url, answerDTO);
+  updateAnswer(answerDTO: AnswerWriteDTO): Observable<AnswerReadDTO> {
+    return this.http.put<AnswerReadDTO>(this.answers_url, answerDTO);
   }
 
   deleteAnswer(answerId: number): Observable<string> {
